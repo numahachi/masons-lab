@@ -685,7 +685,7 @@ let copy_link = async () => {
         deckname = deckname.substr(deckname.indexOf(": ") + 2);
     }
     let q = encodeURIComponent(await compress(`${deckname}\n${export_deck()}`));
-    navigator.clipboard.writeText(`${window.location.origin}/${window.location.pathname}?import=${q}`);
+    navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?import=${q}`);
 };
 
 let zoom = (i) => {
