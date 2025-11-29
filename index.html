@@ -3,8 +3,833 @@
 <head>
 <meta charset="utf-8" />
 <title>Mason's Lab</title>
+<style>
+html, body {
+    margin: 0;
+    font-family: "Arial";
+}
+
+#left {
+    width: 100%;
+    overflow-y: auto;
+    border-top: 4px solid black;
+}
+
+#right {
+    background: rgb(255, 79, 79);
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    font-size: 13px;
+}
+
+.inner {
+    padding: 8px;
+}
+
+#cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(151px, max-content));
+    grid-gap: 8px;
+    justify-content: center;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    margin: auto;
+}
+
+.row.spaced {
+    justify-content: space-between;
+}
+
+#right .column > .row {
+    width: min(540px, 100%);
+}
+
+.big button {
+    font-size: 18px;
+    height: 30px;
+}
+
+select#decklist {
+    flex-grow: 1;
+    height: 30px;
+    font-size: 18px;
+}
+
+textarea#deck {
+    box-sizing: border-box;
+    margin: 4px 0 4px 0;
+    width: 100%;
+    height: 100%;
+    font-size: 80%;
+    display: none;
+}
+
+.card {
+    display: inline-block;
+    /*width: min(149px, calc(100% / 4 - 8px));*/
+    background: linear-gradient(0deg, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, 1) 60%), rgba(211, 211, 211, 1);
+    /*border-radius: 0 0 5% 5%/0 0 3.644% 3.644%;*/
+    border-radius: 6%/4.017%;
+}
+
+.card img {
+    width: 100%;
+    height: 91%;
+    aspect-ratio: 745/1040;
+    cursor: pointer;
+}
+
+.card .quantity {
+    height: 9%;
+    display: flex;
+    flex-direction: row;
+    margin-top: -4px;
+}
+
+.card .quantity > div {
+    text-align: center;
+    padding: 2px 0;
+    user-select: none;
+    display: flex;
+    align-items: center;
+}
+
+.card .quantity .minus, .card .quantity .plus {
+    width: 20%;
+    flex-grow: 0.5;
+    cursor: pointer;
+}
+
+.card .quantity .plus-minus-inner {
+    margin: auto;
+}
+
+.card:has(.minus:active) {
+    background: linear-gradient(0deg, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, 1) 60%), linear-gradient(90deg, rgba(163, 163, 163, 1) 50%, rgba(211, 211, 211, 1) 50%);
+}
+
+.card:has(.plus:active) {
+    background: linear-gradient(0deg, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, 1) 60%), linear-gradient(-90deg, rgba(163, 163, 163, 1) 50%, rgba(211, 211, 211, 1) 50%);
+}
+
+.card .quantity .number {
+    background: black;
+    color: white;
+    padding: 2px 10%;
+}
+
+.card .quantity .number0 {
+    background: transparent;
+    color: black;
+}
+
+#zoom {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    cursor: default;
+}
+
+#zoom-row {
+    width: 100%;
+    height: 80%;
+}
+
+#zoom-row .card {
+    width: auto;
+    height: 100%;
+    aspect-ratio: 745/1142.857;
+    box-shadow: 0 0 20px 10px rgba(0, 0, 0, 0.5);
+}
+
+#zoom-row .card img {
+    cursor: pointer;
+}
+
+#zoom-row .card .quantity {
+    font-size: 150%;
+}
+
+#zoom-previous, #zoom-next {
+    flex-grow: 1;
+    height: 100%;
+    container-type: inline-size;
+    cursor: pointer;
+}
+
+.zoom-cycle-text {
+    width: 100%;
+    text-align: center;
+    font-size: 12cqh;
+    color: white;
+    text-shadow: 2px 2px 20px rgb(0, 0, 0, 0.5);
+}
+
+.zoom-cycle-text > svg {
+    width: max(40px, 25%);
+    display: inline-block;
+}
+</style>
+<script>
+let show_unused = true;
+let current_zoom = 0;
+
+let builtin_decks = [];
+
+let urls = [];
+
+let url_lookup = {};
+
+let storage_keys = () => {
+    let keys = [];
+    for (let i = 0; i < window.localStorage.length; i++) {
+        let key = window.localStorage.key(i);
+        if (!key.startsWith("masons-lab:")) {
+            continue;
+        }
+        keys.push(key.substr("masons-lab:".length));
+    }
+    return keys;
+}
+
+let storage_get = (key) => {
+    return window.localStorage.getItem(`masons-lab:${key}`);
+}
+
+let storage_set = (key, value) => {
+    return window.localStorage.setItem(`masons-lab:${key}`, value);
+}
+
+let storage_remove = (key) => {
+    return window.localStorage.removeItem(`masons-lab:${key}`);
+}
+
+let init_decklist = () => {
+    let decklist = document.getElementById("decklist");
+    decklist.innerHTML = "";
+
+    let current_deck = storage_get("__current_deck");
+
+    let names = [];
+    for (let key of storage_keys()) {
+        if (key.startsWith("__")) {
+            continue;
+        }
+        names.push(key);
+    }
+    names.sort((a, b) => a.localeCompare(b, "en", {"sensitivity": "base"}));
+    for (let name of names) {
+        let option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        decklist.appendChild(option);
+        if (current_deck === name) {
+            decklist.value = name;
+            document.getElementById("deck").value = storage_get(name);
+        }
+    }
+
+    for (let deck of builtin_decks) {
+        let option = document.createElement("option");
+        option.value = deck.name;
+        option.textContent = deck.name;
+        decklist.appendChild(option);
+        if (current_deck === deck.name || current_deck === null) {
+            decklist.value = deck.name;
+            document.getElementById("deck").value = deck.value;
+        }
+    }
+}
+
+let load = async () => {
+    let show_unused_storage = storage_get("__show_unused");
+    if (show_unused_storage !== null) {
+        show_unused = show_unused_storage === "true";
+        document.getElementById("toggle-unused").textContent = show_unused ? "Hide" : "Show";
+    }
+
+    url_lookup = {};
+    for (let entry of urls) {
+        url_lookup[entry.display] = entry;
+        for (let external of entry.external) {
+            url_lookup[external] = entry;
+        }
+    }
+
+    init_decklist();
+
+    let params = new URLSearchParams(document.location.search);
+    let importable = params.get("import");
+    if (importable !== null && importable.length > 0) {
+        try {
+            let decoded = await decompress(decodeURIComponent(importable));
+            let name = decoded.slice(0, decoded.indexOf("\n"));
+            if (confirm(`Import deck "${name}"?`)) {
+                let text = decoded.slice(decoded.indexOf("\n") + 1);
+                import_deck(name, text);
+            }
+            window.history.replaceState(null, "", window.location.pathname);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+}
+
+let save = (deckname) => {
+    storage_set(deckname, document.getElementById("deck").value);
+    storage_set("__current_deck", deckname);
+}
+
+let remove_deck = () => {
+    let deckname = document.getElementById("decklist").value;
+    if (!deckname.startsWith("Custom: ")) {
+        return;
+    }
+    storage_remove(deckname);
+    if (storage_get("__current_deck") === deckname) {
+        storage_remove("__current_deck");
+    }
+    init_decklist();
+    update();
+}
+
+let delete_deck = () => {
+    let deckname = document.getElementById("decklist").value;
+    if (!deckname.startsWith("Custom: ")) {
+        return;
+    }
+    if (window.confirm(`Delete "${deckname}"?`)) {
+        remove_deck();
+    }
+}
+
+let get_unique_deckname = (deckname) => {
+    while (storage_get(deckname) !== null) {
+        let parts = deckname.split(" ");
+        if (parts.length > 0) {
+            let last = parts[parts.length - 1];
+            let n = Number(last);
+            if (last !== "" && !isNaN(n)) {
+                parts[parts.length - 1] = `${n + 1}`;
+                deckname = parts.join(" ");
+                continue;
+            }
+        }
+        deckname += " 2";
+    }
+    return deckname;
+}
+
+let clone = () => {
+    let deckname = document.getElementById("decklist").value;
+    if (deckname.indexOf(": ") !== -1) {
+        deckname = deckname.substr(deckname.indexOf(": ") + 2);
+    } else {
+        deckname = "Untitled";
+    }
+    deckname = `Custom: ${deckname}`;
+    deckname = get_unique_deckname(deckname);
+    save(deckname);
+    init_decklist();
+}
+
+let rename = () => {
+    let deckname = document.getElementById("decklist").value;
+    let was_custom = deckname.startsWith("Custom: ");
+    if (deckname.indexOf(": ") !== -1) {
+        deckname = deckname.substr(deckname.indexOf(": ") + 2);
+    }
+    deckname = window.prompt("Enter a new name for this deck:", deckname);
+    if (!deckname) {
+        return;
+    }
+    if (!was_custom) {
+        clone();
+    }
+    deckname = `Custom: ${deckname}`;
+    if (deckname === document.getElementById("decklist").value) {
+        return;
+    }
+    deckname = get_unique_deckname(deckname);
+    save(deckname);
+    remove_deck();
+}
+
+let write = (lines) => {
+    document.getElementById("deck").value = lines;
+    let deckname = document.getElementById("decklist").value;
+    if (deckname.startsWith("Custom: ")) {
+        save(deckname);
+    } else {
+        clone();
+    }
+}
+
+let switch_deck = () => {
+    let deckname = document.getElementById("decklist").value;
+    storage_set("__current_deck", deckname);
+    init_decklist();
+    update();
+}
+
+let get_card = (i) => {
+    return Array.from(document.getElementsByClassName("card")).filter((c) => c.getAttribute("data-i") === `${i}`);
+}
+
+let init_card = (card, i, qty, url) => {
+    card.classList.add("card");
+    card.setAttribute("data-i", i);
+    card.innerHTML = "";
+
+    let img = document.createElement("img");
+    let url_entry = url_lookup[url];
+    if (url_entry) {
+        img.src = url_entry.display;
+    } else {
+        img.src = url;
+    }
+    img.addEventListener("click", (e) => {
+        if (document.getElementById("cards").contains(e.srcElement)) {
+            zoom(i);
+        }
+    });
+    card.appendChild(img);
+
+    let quantity = document.createElement("div");
+    quantity.classList.add("quantity");
+    card.appendChild(quantity);
+
+    let minus = document.createElement("div");
+    minus.classList.add("minus");
+    minus.addEventListener("click", (e) => {
+        e.stopPropagation();
+        add_quantity(i, -1);
+    });
+    quantity.appendChild(minus);
+
+    let minus_inner = document.createElement("div");
+    minus_inner.classList.add("plus-minus-inner");
+    minus_inner.textContent = "–";
+    minus.appendChild(minus_inner);
+
+    let number = document.createElement("div");
+    update_number(card, number, qty);
+    quantity.appendChild(number);
+
+    let plus = document.createElement("div");
+    plus.classList.add("plus");
+    plus.addEventListener("click", (e) => {
+        e.stopPropagation();
+        add_quantity(i, 1);
+    });
+    quantity.appendChild(plus);
+
+    let plus_inner = document.createElement("div");
+    plus_inner.classList.add("plus-minus-inner");
+    plus_inner.textContent = "+";
+    plus.appendChild(plus_inner);
+};
+
+let update_number = (card, number, qty) => {
+    number.className = "";
+    number.classList.add("number");
+    number.textContent = qty;
+    if (qty === 0) {
+        number.classList.add("number0");
+    }
+    card.style.display = (qty === 0 && !show_unused && document.getElementById("cards").contains(card)) ? "none" : "inline-block";
+};
+
+let add_quantity = (i, offset) => {
+    let lines = [];
+    let j = 0;
+    for (let line of document.getElementById("deck").value.split("\n")) {
+        j += 1;
+        if (i === j) {
+            let [old_qty, name, type, url, ...rest] = line.split(",");
+            let qty = Number(old_qty) + offset;
+            if (qty < 0) {
+                qty = 0;
+            }
+            let new_line = [qty, name, type, url].join(",");
+            lines.push(new_line);
+            for (let card of get_card(i)) {
+                let number = card.getElementsByClassName("number")[0];
+                update_number(card, number, qty);
+            }
+        } else {
+            lines.push(line);
+        }
+    }
+    write(lines.join("\n"));
+    update_stats();
+};
+
+let parse_lines = () => {
+    let lines = [];
+    let i = 0;
+    for (let line of document.getElementById("deck").value.split("\n")) {
+        i += 1;
+        let [qty_str, name, type, url, ...rest] = line.split(",");
+        if (rest.length > 0) {
+            continue;
+        }
+        let qty = Number(qty_str);
+        if (isNaN(qty) || !qty_str) {
+            continue;
+        }
+        lines.push([i, qty, name, type, url]);
+    }
+    return lines;
+};
+
+let update_stats = () => {
+    let pokemon = 0;
+    let trainers = 0;
+    let energies = 0;
+    let unused = 0;
+    for (let [i, qty, name, type, url] of parse_lines()) {
+        if (qty === 0) {
+            unused += 1;
+        } else if (type === "Pokémon") {
+            pokemon += qty;
+        } else if (type === "Trainer") {
+            trainers += qty;
+        } else if (type === "Energy") {
+            energies += qty;
+        }
+    }
+    document.getElementById("stats").textContent = `${pokemon + trainers + energies} cards = ${pokemon} Pokémon + ${trainers} Trainers + ${energies} Energies`;
+    document.getElementById("stats-unused").textContent = `${unused} unused:`;
+};
+
+let update = () => {
+    let cards = document.getElementById("cards");
+    cards.innerHTML = "";
+
+    for (let [i, qty, name, type, url] of parse_lines()) {
+        let card = document.createElement("span");
+        cards.appendChild(card);
+        init_card(card, i, qty, url);
+    }
+
+    update_stats();
+}
+
+let toggle_unused = () => {
+    let button = document.getElementById("toggle-unused");
+    if (button.textContent === "Hide") {
+        show_unused = false;
+        button.textContent = "Show";
+    } else {
+        show_unused = true;
+        button.textContent = "Hide";
+    }
+    storage_set("__show_unused", show_unused);
+    update();
+};
+
+let remove_unused = () => {
+    let lines = [];
+    let unused = 0;
+    for (let line of document.getElementById("deck").value.split("\n")) {
+        let [qty, name, type, url, ...rest] = line.split(",");
+        if (qty === "0") {
+            unused += 1;
+            continue;
+        }
+        lines.push(line);
+    }
+    let deckname = document.getElementById("decklist").value;
+    if (window.confirm(`Remove ${unused} unused cards from "${deckname}"?`)) {
+        write(lines.join("\n"));
+        update();
+    }
+};
+
+let play = () => {
+    window.open("https://ptcgsim.online/");
+};
+
+let export_deck = () => {
+    let lines = [];
+    for (let line of document.getElementById("deck").value.split("\n")) {
+        let [qty, name, type, url, ...rest] = line.split(",");
+        let url_entry = url_lookup[url];
+        if (url_entry) {
+            line = [qty, name, type, url_entry.external.at(-1), ...rest].join(",");
+        }
+        lines.push(line);
+    }
+    return lines.join("\n");
+};
+
+let download = () => {
+    let deckname = document.getElementById("decklist").value;
+    if (deckname.indexOf(": ") !== -1) {
+        deckname = deckname.substr(deckname.indexOf(": ") + 2);
+    }
+    let e = document.createElement("a");
+    e.setAttribute("href", `data:text/plain;charset=utf-8,${encodeURIComponent(export_deck())}`);
+    e.setAttribute("download", `${deckname}.csv`);
+    e.style.display = "none";
+    document.body.appendChild(e);
+    e.click();
+    document.body.removeChild(e);
+};
+
+let upload = () => {
+    document.getElementById("upload_impl").click();
+};
+
+let process_upload = (text) => {
+    let lines = [`QTY,Name,Type,URL`];
+    for (let line of text.split("\n")) {
+        let [qty_str, name, type, url, ...rest] = line.split(",");
+        if (rest.length > 0) {
+            continue;
+        }
+        let qty = Number(qty_str);
+        if (isNaN(qty) || !qty_str) {
+            continue;
+        }
+        let url_entry = url_lookup[url];
+        if (url_entry) {
+            url = url_entry.display;
+        }
+        lines.push(`${qty},${name},${type},${url}`);
+    }
+    return lines.join(`\n`);
+};
+
+let upload_impl = async (e) => {
+    for (let file of e.target.files) {
+        let deckname = file.name;
+        if (deckname.endsWith(".csv")) {
+            deckname = deckname.slice(0, -4);
+        }
+        deckname = `Custom: ${deckname}`;
+        deckname = get_unique_deckname(deckname);
+        let text = await file.text();
+        text = process_upload(text);
+        document.getElementById("deck").value = text;
+        save(deckname);
+    }
+    e.target.value = null;
+    init_decklist();
+    update();
+};
+
+let import_deck = (name, text) => {
+    let deckname = `Custom: ${name}`;
+    deckname = get_unique_deckname(deckname);
+    document.getElementById("deck").value = text;
+    save(deckname);
+    init_decklist();
+    update();
+};
+
+let copy = () => {
+    navigator.clipboard.writeText(export_deck());
+};
+
+let paste = async () => {
+    import_deck(`Untitled`, await navigator.clipboard.readText());
+};
+
+let compress = (string) => {
+    const blobToBase64 = blob => new Promise((resolve, _) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result.split(',')[1]);
+        reader.readAsDataURL(blob);
+    });
+    const byteArray = new TextEncoder().encode(string);
+    const cs = new CompressionStream('gzip');
+    const writer = cs.writable.getWriter();
+    writer.write(byteArray);
+    writer.close();
+    return new Response(cs.readable).blob().then(blobToBase64);
+};
+
+let decompress = (base64string) => {
+    const bytes = Uint8Array.from(atob(base64string), c => c.charCodeAt(0));
+    const cs = new DecompressionStream('gzip');
+    const writer = cs.writable.getWriter();
+    writer.write(bytes);
+    writer.close();
+    return new Response(cs.readable).arrayBuffer().then(function (arrayBuffer) {
+        return new TextDecoder().decode(arrayBuffer);
+    });
+}
+
+let copy_link = async () => {
+    let deckname = document.getElementById("decklist").value;
+    if (deckname.indexOf(": ") !== -1) {
+        deckname = deckname.substr(deckname.indexOf(": ") + 2);
+    }
+    let q = encodeURIComponent(await compress(`${deckname}\n${export_deck()}`));
+    navigator.clipboard.writeText(`${window.location.origin}/${window.location.pathname}?import=${q}`);
+};
+
+let zoom = (i) => {
+    let lines = parse_lines();
+    if (lines.length === 0 || i < lines[0][0] || i > lines[lines.length - 1][0]) {
+        return;
+    }
+    current_zoom = i;
+    let zoom = document.getElementById("zoom");
+    let zoom_card = document.createElement("span");
+    for (let [j, qty, name, type, url] of lines) {
+        if (i === j) {
+            init_card(zoom_card, i, qty, url);
+            zoom.getElementsByClassName("card")[0].replaceWith(zoom_card);
+            document.querySelector(`#zoom-previous .zoom-cycle-text`).style.display = (i === lines[0][0]) ? "none" : "block";
+            document.querySelector(`#zoom-next .zoom-cycle-text`).style.display = (i === lines[lines.length - 1][0]) ? "none" : "block";
+            zoom.style.display = "flex";
+            return;
+        }
+    }
+}
+
+let zoom_previous = (e) => {
+    e.stopPropagation();
+    let lines = parse_lines();
+    lines.reverse();
+    for (let [i, qty, name, type, url] of lines) {
+        if (i >= current_zoom) {
+            continue;
+        }
+        let card = document.querySelector(`#cards [data-i='${i}']`);
+        if (card === null) {
+            continue;
+        }
+        if (card.style.display === "none") {
+            continue;
+        }
+        zoom(i);
+        return;
+    }
+}
+
+let zoom_next = (e) => {
+    e.stopPropagation();
+    let lines = parse_lines();
+    for (let [i, qty, name, type, url] of lines) {
+        if (i <= current_zoom) {
+            continue;
+        }
+        let card = document.querySelector(`#cards [data-i='${i}']`);
+        if (card === null) {
+            continue;
+        }
+        if (card.style.display === "none") {
+            continue;
+        }
+        zoom(i);
+        return;
+    }
+}
+
+window.addEventListener("load", async () => {
+    await load();
+    update();
+    document.getElementById("decklist").addEventListener("change", switch_deck);
+    document.getElementById("deck").addEventListener("input", update);
+    document.getElementById("play").addEventListener("click", play);
+    document.getElementById("download").addEventListener("click", download);
+    document.getElementById("upload").addEventListener("click", upload);
+    document.getElementById("upload_impl").addEventListener("change", upload_impl);
+    document.getElementById("copy_link").addEventListener("click", copy_link);
+    document.getElementById("clone").addEventListener("click", clone);
+    document.getElementById("rename").addEventListener("click", rename);
+    document.getElementById("delete").addEventListener("click", delete_deck);
+    document.getElementById("toggle-unused").addEventListener("click", toggle_unused);
+    document.getElementById("remove-unused").addEventListener("click", remove_unused);
+    document.getElementById("zoom").addEventListener("click", () => {
+        document.getElementById("zoom").style.display = "none";
+    });
+    document.getElementById("zoom-previous").addEventListener("click", zoom_previous);
+    document.getElementById("zoom-next").addEventListener("click", zoom_next);
+});
+</script>
 </head>
 <body>
-Hello world
+
+<div id="right">
+<div class="inner">
+<div class="column">
+
+<div class="row big">
+<select id="decklist">
+</select>
+</div>
+
+<div class="row spaced">
+<div>
+<button id="play">Play</button>
+</div>
+<div>
+<button id="download">Export</button>
+<button id="upload">Import</button>
+<input id="upload_impl" type="file" style="display: none" multiple />
+</div>
+<div>
+<button id="copy_link">Copy link</button>
+</div>
+<div>
+<button id="clone">Clone</button>
+<button id="rename">Rename</button>
+<button id="delete">Delete</button>
+</div>
+</div>
+
+<textarea id="deck">
+</textarea>
+
+<div class="row spaced">
+<div id="stats"></div>
+<div>
+<span id="stats-unused"></span>
+<button id="toggle-unused">Hide</button>
+<button id="remove-unused">Remove</button>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+<div id="left">
+<div class="inner">
+<div id="cards">
+</div>
+</div>
+</div>
+
+<div id="zoom">
+<div id="zoom-row" class="row spaced">
+<div id="zoom-previous" class="row"><span class="zoom-cycle-text"><svg viewBox="0 0 24 24" fill="currentColor" stroke-width="0" stroke="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z"></path></svg></span></div>
+<span class="card"><img><div class="quantity"><div class="minus"><div class="plus-minus-inner">–</div></div><div class="number">4</div><div class="plus"><div class="plus-minus-inner">+</div></div></div></span>
+<div id="zoom-next" class="row"><span class="zoom-cycle-text"><svg viewBox="0 0 24 24" fill="currentColor" stroke-width="0" stroke="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z"></path></svg></span></div>
+</div>
+</div>
+
 </body>
 </html>
