@@ -191,9 +191,831 @@ textarea#deck {
 let show_unused = true;
 let current_zoom = 0;
 
-let builtin_decks = [];
+let builtin_decks = [
+    {
+        "name": "Set: Nichijou",
+        "value": `QTY,Name,Type,URL
+0,Manabu-kun,Pokémon,images/nch/001.png
+0,Takasaki-sensei,Pokémon,images/nch/002.png
+0,Izumi-chan,Pokémon,images/nch/003.png
+0,Sakurai-sensei,Pokémon,images/nch/004.png
+0,Sasahara Koujirou,Pokémon,images/nch/005.png
+0,Sasahara Kojirou,Pokémon,images/nch/006.png
+0,Misato,Pokémon,images/nch/007.png
+0,Tanaka-kun,Pokémon,images/nch/008.png
+0,Naganon,Pokémon,images/nch/009.png
+0,Naganohara Mio,Pokémon,images/nch/010.png
+0,Daisuke-sensei,Pokémon,images/nch/011.png
+0,Egi Masaharu,Pokémon,images/nch/012.png
+0,Hakase,Pokémon,images/nch/013.png
+0,Shinonome Hakase,Pokémon,images/nch/014.png
+0,Nakamura-sensei,Pokémon,images/nch/015.png
+0,Weboshii,Pokémon,images/nch/016.png
+0,Mai-chan,Pokémon,images/nch/017.png
+0,Minakami Mai,Pokémon,images/nch/018.png
+0,Minakami-sensei,Pokémon,images/nch/019.png
+0,Yoshino,Pokémon,images/nch/020.png
+0,Double Cheeseburgirl,Pokémon,images/nch/021.png
+0,Yukko,Pokémon,images/nch/022.png
+0,Aioi Yuuko,Pokémon,images/nch/023.png
+0,Professor Makabe,Pokémon,images/nch/024.png
+0,Mihoshi,Pokémon,images/nch/025.png
+0,Makoto,Pokémon,images/nch/026.png
+0,Dolph,Pokémon,images/nch/027.png
+0,Ogi,Pokémon,images/nch/028.png
+0,Front Left Paw of the Forbidden One,Pokémon,images/nch/029.png
+0,Front Right Paw of the Forbidden One,Pokémon,images/nch/030.png
+0,Rear Left Paw of the Forbidden One,Pokémon,images/nch/031.png
+0,Rear Right Paw of the Forbidden One,Pokémon,images/nch/032.png
+0,Sakamouth The Forbidden One,Pokémon,images/nch/033.png
+0,Shinonome C,Pokémon,images/nch/034.png
+0,Nano-chan,Pokémon,images/nch/035.png
+0,Shinonome Nano,Pokémon,images/nch/036.png
+0,Biscuit #1,Pokémon,images/nch/037.png
+0,Biscuit #2,Pokémon,images/nch/038.png
+0,Biscuit #3,Pokémon,images/nch/039.png
+0,Princess Starla,Pokémon,images/nch/040.png
+0,Daiku Kenzaburou,Pokémon,images/nch/041.png
+0,Sekiguchi Yuria,Pokémon,images/nch/042.png
+0,Champion Sekiguchi,Pokémon,images/nch/043.png
+0,Tanabo,Pokémon,images/nch/044.png
+0,Sumika,Pokémon,images/nch/045.png
+0,Nakanojou-kun,Pokémon,images/nch/046.png
+0,Annaka-san,Pokémon,images/nch/047.png
+0,Fecchan,Pokémon,images/nch/048.png
+0,Pyon,Pokémon,images/nch/049.png
+0,Oguri Cap,Pokémon,images/nch/050.png
+0,4.5% Milk,Trainer,images/nch/051.png
+0,Omurice,Trainer,images/nch/052.png
+0,Snickers,Trainer,images/nch/053.png
+0,Grande White Chocolate Mocha Frappuccino,Trainer,images/nch/054.png
+0,Kobuddy,Trainer,images/nch/055.png
+0,Buddy,Trainer,images/nch/056.png
+0,Time Capsule,Trainer,images/nch/057.png
+0,Kamakura,Trainer,images/nch/058.png
+0,Mogura,Trainer,images/nch/059.png
+0,Mega Mogura,Trainer,images/nch/060.png
+0,Kumomadori,Trainer,images/nch/061.png
+0,Niji,Trainer,images/nch/062.png
+0,Unbearably Super-Hot Chef's Choice Chicken Bar,Trainer,images/nch/063.png
+0,Computer Search,Trainer,images/nch/064.png
+0,Argentine Peso,Trainer,images/nch/065.png
+0,Wani,Trainer,images/nch/066.png
+0,Bear Mask,Trainer,images/nch/067.png
+0,Bougu,Trainer,images/nch/068.png
+0,Tiny Chopping Board,Trainer,images/nch/069.png
+0,Voucher of Everlasting Friendship,Trainer,images/nch/070.png
+0,Technical Machine: Miracle Scarf,Trainer,images/nch/071.png
+0,Technical Machine:  Wood Cubes,Trainer,images/nch/072.png
+0,Hakase's Research,Trainer,images/nch/073.png
+0,Imposter Hakase's Research,Trainer,images/nch/074.png
+0,Kouchou,Trainer,images/nch/075.png
+0,Kyoutou,Trainer,images/nch/076.png
+0,Policeman,Trainer,images/nch/077.png
+0,Hirose,Trainer,images/nch/078.png
+0,Arama-san,Trainer,images/nch/079.png
+0,Gentleman,Trainer,images/nch/080.png
+0,Oogo,Trainer,images/nch/081.png
+0,Tomioka-sensei,Trainer,images/nch/082.png
+0,Akagi-sensei,Trainer,images/nch/083.png
+0,Pino,Trainer,images/nch/084.png
+0,Mono-eye,Trainer,images/nch/085.png
+0,Cupid's Failure,Trainer,images/nch/086.png
+0,Amagawa Shinbun,Trainer,images/nch/087.png
+0,Tamamura,Trainer,images/nch/088.png
+0,Taishou's Orders,Trainer,images/nch/089.png
+0,Bera-chan,Trainer,images/nch/090.png
+0,Yanba-kun's Disruption,Trainer,images/nch/091.png
+0,Rokugou,Trainer,images/nch/092.png
+0,Daifuku-kun,Trainer,images/nch/093.png
+0,Shihandai's Encouragement,Trainer,images/nch/094.png
+0,Oomama Midori,Trainer,images/nch/095.png
+0,Sasahara's Farm,Trainer,images/nch/096.png
+0,Tokisadame Shoutengai,Trainer,images/nch/097.png
+0,Tokisadame High School,Trainer,images/nch/098.png
+0,Igo Soccer Club,Trainer,images/nch/099.png
+0,Embankment of Youth,Trainer,images/nch/100.png
+0,Basic Grass Energy,Energy,https://images.pokemontcg.io/sve/1_hires.png
+0,Basic Fire Energy,Energy,https://images.pokemontcg.io/sve/2_hires.png
+0,Basic Water Energy,Energy,https://images.pokemontcg.io/sve/3_hires.png
+0,Basic Lightning Energy,Energy,https://images.pokemontcg.io/sve/4_hires.png
+0,Basic Psychic Energy,Energy,https://images.pokemontcg.io/sve/5_hires.png
+0,Basic Fighting Energy,Energy,https://images.pokemontcg.io/sve/6_hires.png
+0,Basic Darkness Energy,Energy,https://images.pokemontcg.io/sve/7_hires.png
+0,Basic Metal Energy,Energy,https://images.pokemontcg.io/sve/8_hires.png
+`,
+    },
+];
 
-let urls = [];
+let urls = [
+    {
+        // Manabu-kun
+        "display": "images/nch/001.png",
+        "external": [
+            "https://files.catbox.moe/srhr50.png",
+        ],
+    },
+    {
+        // Takasaki-sensei
+        "display": "images/nch/002.png",
+        "external": [
+            "https://files.catbox.moe/dxaq84.png",
+        ],
+    },
+    {
+        // Izumi-chan
+        "display": "images/nch/003.png",
+        "external": [
+            "https://files.catbox.moe/zo6eir.png",
+        ],
+    },
+    {
+        // Sakurai-sensei
+        "display": "images/nch/004.png",
+        "external": [
+            "https://files.catbox.moe/kcauvw.png",
+        ],
+    },
+    {
+        // Sasahara Koujirou
+        "display": "images/nch/005.png",
+        "external": [
+            "https://files.catbox.moe/xa1du0.png",
+        ],
+    },
+    {
+        // Sasahara Kojirou
+        "display": "images/nch/006.png",
+        "external": [
+            "https://files.catbox.moe/ye9t40.png",
+        ],
+    },
+    {
+        // Misato
+        "display": "images/nch/007.png",
+        "external": [
+            "https://files.catbox.moe/8o1o8e.png",
+        ],
+    },
+    {
+        // Tanaka-kun
+        "display": "images/nch/008.png",
+        "external": [
+            "https://files.catbox.moe/mlyyp2.png",
+        ],
+    },
+    {
+        // Naganon
+        "display": "images/nch/009.png",
+        "external": [
+            "https://files.catbox.moe/bi2ufo.png",
+        ],
+    },
+    {
+        // Naganohara Mio
+        "display": "images/nch/010.png",
+        "external": [
+            "https://files.catbox.moe/kwhhfh.png",
+        ],
+    },
+    {
+        // Daisuke-sensei
+        "display": "images/nch/011.png",
+        "external": [
+            "https://files.catbox.moe/l519vc.png",
+        ],
+    },
+    {
+        // Egi Masaharu
+        "display": "images/nch/012.png",
+        "external": [
+            "https://files.catbox.moe/gz7o1v.png",
+        ],
+    },
+    {
+        // Hakase
+        "display": "images/nch/013.png",
+        "external": [
+            "https://files.catbox.moe/9crbis.png",
+        ],
+    },
+    {
+        // Shinonome Hakase
+        "display": "images/nch/014.png",
+        "external": [
+            "https://files.catbox.moe/se59qb.png",
+        ],
+    },
+    {
+        // Nakamura-sensei
+        "display": "images/nch/015.png",
+        "external": [
+            "https://files.catbox.moe/auau19.png",
+        ],
+    },
+    {
+        // Weboshii
+        "display": "images/nch/016.png",
+        "external": [
+            "https://files.catbox.moe/sx1m3j.png",
+        ],
+    },
+    {
+        // Mai-chan
+        "display": "images/nch/017.png",
+        "external": [
+            "https://files.catbox.moe/r7c9m4.png",
+        ],
+    },
+    {
+        // Minakami Mai
+        "display": "images/nch/018.png",
+        "external": [
+            "https://files.catbox.moe/03cj56.png",
+        ],
+    },
+    {
+        // Minakami-sensei
+        "display": "images/nch/019.png",
+        "external": [
+            "https://files.catbox.moe/93gmhk.png",
+        ],
+    },
+    {
+        // Yoshino
+        "display": "images/nch/020.png",
+        "external": [
+            "https://files.catbox.moe/hi0pjb.png",
+        ],
+    },
+    {
+        // Double Cheeseburgirl
+        "display": "images/nch/021.png",
+        "external": [
+            "https://files.catbox.moe/zd93vm.png",
+        ],
+    },
+    {
+        // Yukko
+        "display": "images/nch/022.png",
+        "external": [
+            "https://files.catbox.moe/9t295l.png",
+        ],
+    },
+    {
+        // Aioi Yuuko
+        "display": "images/nch/023.png",
+        "external": [
+            "https://files.catbox.moe/yielmv.png",
+        ],
+    },
+    {
+        // Professor Makabe
+        "display": "images/nch/024.png",
+        "external": [
+            "https://files.catbox.moe/04o8yd.png",
+        ],
+    },
+    {
+        // Mihoshi
+        "display": "images/nch/025.png",
+        "external": [
+            "https://files.catbox.moe/czk8sz.png",
+        ],
+    },
+    {
+        // Makoto
+        "display": "images/nch/026.png",
+        "external": [
+            "https://files.catbox.moe/g6im6d.png",
+        ],
+    },
+    {
+        // Dolph
+        "display": "images/nch/027.png",
+        "external": [
+            "https://files.catbox.moe/2blw24.png",
+        ],
+    },
+    {
+        // Ogi
+        "display": "images/nch/028.png",
+        "external": [
+            "https://files.catbox.moe/s7oja0.png",
+        ],
+    },
+    {
+        // Front Left Paw of the Forbidden One
+        "display": "images/nch/029.png",
+        "external": [
+            "https://files.catbox.moe/661je1.png",
+        ],
+    },
+    {
+        // Front Right Paw of the Forbidden One
+        "display": "images/nch/030.png",
+        "external": [
+            "https://files.catbox.moe/oo89sg.png",
+        ],
+    },
+    {
+        // Rear Left Paw of the Forbidden One
+        "display": "images/nch/031.png",
+        "external": [
+            "https://files.catbox.moe/5hpgn7.png",
+        ],
+    },
+    {
+        // Rear Right Paw of the Forbidden One
+        "display": "images/nch/032.png",
+        "external": [
+            "https://files.catbox.moe/pz54oy.png",
+        ],
+    },
+    {
+        // Sakamouth The Forbidden One
+        "display": "images/nch/033.png",
+        "external": [
+            "https://files.catbox.moe/jptk6d.png",
+        ],
+    },
+    {
+        // Shinonome C
+        "display": "images/nch/034.png",
+        "external": [
+            "https://files.catbox.moe/nvw75v.png",
+        ],
+    },
+    {
+        // Nano-chan
+        "display": "images/nch/035.png",
+        "external": [
+            "https://files.catbox.moe/3dzb7e.png",
+        ],
+    },
+    {
+        // Shinonome Nano
+        "display": "images/nch/036.png",
+        "external": [
+            "https://files.catbox.moe/3iwjgx.png",
+        ],
+    },
+    {
+        // Biscuit #1
+        "display": "images/nch/037.png",
+        "external": [
+            "https://files.catbox.moe/ywf15z.png",
+        ],
+    },
+    {
+        // Biscuit #2
+        "display": "images/nch/038.png",
+        "external": [
+            "https://files.catbox.moe/kr0d8n.png",
+        ],
+    },
+    {
+        // Biscuit #3
+        "display": "images/nch/039.png",
+        "external": [
+            "https://files.catbox.moe/52t5vg.png",
+        ],
+    },
+    {
+        // Princess Starla
+        "display": "images/nch/040.png",
+        "external": [
+            "https://files.catbox.moe/abvfu3.png",
+        ],
+    },
+    {
+        // Daiku Kenzaburou
+        "display": "images/nch/041.png",
+        "external": [
+            "https://files.catbox.moe/no1vrw.png",
+        ],
+    },
+    {
+        // Sekiguchi Yuria
+        "display": "images/nch/042.png",
+        "external": [
+            "https://files.catbox.moe/4rbqr9.png",
+        ],
+    },
+    {
+        // Champion Sekiguchi
+        "display": "images/nch/043.png",
+        "external": [
+            "https://files.catbox.moe/r843j8.png",
+        ],
+    },
+    {
+        // Tanabo
+        "display": "images/nch/044.png",
+        "external": [
+            "https://files.catbox.moe/ca2tnn.png",
+        ],
+    },
+    {
+        // Sumika
+        "display": "images/nch/045.png",
+        "external": [
+            "https://files.catbox.moe/lckyik.png",
+        ],
+    },
+    {
+        // Nakanojou-kun
+        "display": "images/nch/046.png",
+        "external": [
+            "https://files.catbox.moe/2x247b.png",
+        ],
+    },
+    {
+        // Annaka-san
+        "display": "images/nch/047.png",
+        "external": [
+            "https://files.catbox.moe/588b4o.png",
+        ],
+    },
+    {
+        // Fecchan
+        "display": "images/nch/048.png",
+        "external": [
+            "https://files.catbox.moe/8afnxg.png",
+        ],
+    },
+    {
+        // Pyon
+        "display": "images/nch/049.png",
+        "external": [
+            "https://files.catbox.moe/y49p92.png",
+        ],
+    },
+    {
+        // Oguri Cap
+        "display": "images/nch/050.png",
+        "external": [
+            "https://files.catbox.moe/nf96aq.png",
+        ],
+    },
+    {
+        // 4.5% Milk
+        "display": "images/nch/051.png",
+        "external": [
+            "https://files.catbox.moe/ubbch5.png",
+        ],
+    },
+    {
+        // Omurice
+        "display": "images/nch/052.png",
+        "external": [
+            "https://files.catbox.moe/sq9ei7.png",
+        ],
+    },
+    {
+        // Snickers
+        "display": "images/nch/053.png",
+        "external": [
+            "https://files.catbox.moe/hr0e8v.png",
+        ],
+    },
+    {
+        // Grande White Chocolate Mocha Frappuccino
+        "display": "images/nch/054.png",
+        "external": [
+            "https://files.catbox.moe/ofoxsb.png",
+        ],
+    },
+    {
+        // Kobuddy
+        "display": "images/nch/055.png",
+        "external": [
+            "https://files.catbox.moe/4vyz0m.png",
+        ],
+    },
+    {
+        // Buddy
+        "display": "images/nch/056.png",
+        "external": [
+            "https://files.catbox.moe/pmr15w.png",
+        ],
+    },
+    {
+        // Time Capsule
+        "display": "images/nch/057.png",
+        "external": [
+            "https://files.catbox.moe/mbahrl.png",
+        ],
+    },
+    {
+        // Kamakura
+        "display": "images/nch/058.png",
+        "external": [
+            "https://files.catbox.moe/fs8hrb.png",
+        ],
+    },
+    {
+        // Mogura
+        "display": "images/nch/059.png",
+        "external": [
+            "https://files.catbox.moe/a63kso.png",
+        ],
+    },
+    {
+        // Mega Mogura
+        "display": "images/nch/060.png",
+        "external": [
+            "https://files.catbox.moe/932nw7.png",
+        ],
+    },
+    {
+        // Kumomadori
+        "display": "images/nch/061.png",
+        "external": [
+            "https://files.catbox.moe/v243za.png",
+        ],
+    },
+    {
+        // Niji
+        "display": "images/nch/062.png",
+        "external": [
+            "https://files.catbox.moe/fu0nys.png",
+        ],
+    },
+    {
+        // Unbearably Super-Hot Chef's Choice Chicken Bar
+        "display": "images/nch/063.png",
+        "external": [
+            "https://files.catbox.moe/t7md49.png",
+        ],
+    },
+    {
+        // Computer Search
+        "display": "images/nch/064.png",
+        "external": [
+            "https://files.catbox.moe/uug4r4.png",
+        ],
+    },
+    {
+        // Argentine Peso
+        "display": "images/nch/065.png",
+        "external": [
+            "https://files.catbox.moe/6alu81.png",
+        ],
+    },
+    {
+        // Wani
+        "display": "images/nch/066.png",
+        "external": [
+            "https://files.catbox.moe/3aybma.png",
+        ],
+    },
+    {
+        // Bear Mask
+        "display": "images/nch/067.png",
+        "external": [
+            "https://files.catbox.moe/7ndjyz.png",
+        ],
+    },
+    {
+        // Bougu
+        "display": "images/nch/068.png",
+        "external": [
+            "https://files.catbox.moe/e74wr4.png",
+        ],
+    },
+    {
+        // Tiny Chopping Board
+        "display": "images/nch/069.png",
+        "external": [
+            "https://files.catbox.moe/60f4ba.png",
+        ],
+    },
+    {
+        // Voucher of Everlasting Friendship
+        "display": "images/nch/070.png",
+        "external": [
+            "https://files.catbox.moe/gijzhv.png",
+        ],
+    },
+    {
+        // Technical Machine: Miracle Scarf
+        "display": "images/nch/071.png",
+        "external": [
+            "https://files.catbox.moe/4eav01.png",
+        ],
+    },
+    {
+        // Technical Machine:  Wood Cubes
+        "display": "images/nch/072.png",
+        "external": [
+            "https://files.catbox.moe/xjwyvi.png",
+        ],
+    },
+    {
+        // Hakase's Research
+        "display": "images/nch/073.png",
+        "external": [
+            "https://files.catbox.moe/x7qswu.png",
+        ],
+    },
+    {
+        // Imposter Hakase's Research
+        "display": "images/nch/074.png",
+        "external": [
+            "https://files.catbox.moe/ii9ea2.png",
+        ],
+    },
+    {
+        // Kouchou
+        "display": "images/nch/075.png",
+        "external": [
+            "https://files.catbox.moe/w5s4mz.png",
+        ],
+    },
+    {
+        // Kyoutou
+        "display": "images/nch/076.png",
+        "external": [
+            "https://files.catbox.moe/esxhld.png",
+        ],
+    },
+    {
+        // Policeman
+        "display": "images/nch/077.png",
+        "external": [
+            "https://files.catbox.moe/gft445.png",
+        ],
+    },
+    {
+        // Hirose
+        "display": "images/nch/078.png",
+        "external": [
+            "https://files.catbox.moe/dvh9u5.png",
+        ],
+    },
+    {
+        // Arama-san
+        "display": "images/nch/079.png",
+        "external": [
+            "https://files.catbox.moe/m2z0yt.png",
+        ],
+    },
+    {
+        // Gentleman
+        "display": "images/nch/080.png",
+        "external": [
+            "https://files.catbox.moe/g3dmbe.png",
+        ],
+    },
+    {
+        // Oogo
+        "display": "images/nch/081.png",
+        "external": [
+            "https://files.catbox.moe/ubr1yk.png",
+        ],
+    },
+    {
+        // Tomioka-sensei
+        "display": "images/nch/082.png",
+        "external": [
+            "https://files.catbox.moe/ef1yzq.png",
+        ],
+    },
+    {
+        // Akagi-sensei
+        "display": "images/nch/083.png",
+        "external": [
+            "https://files.catbox.moe/oi2hp2.png",
+        ],
+    },
+    {
+        // Pino
+        "display": "images/nch/084.png",
+        "external": [
+            "https://files.catbox.moe/bfoq2q.png",
+        ],
+    },
+    {
+        // Mono-eye
+        "display": "images/nch/085.png",
+        "external": [
+            "https://files.catbox.moe/2rugd5.png",
+        ],
+    },
+    {
+        // Cupid's Failure
+        "display": "images/nch/086.png",
+        "external": [
+            "https://files.catbox.moe/gef46n.png",
+        ],
+    },
+    {
+        // Amagawa Shinbun
+        "display": "images/nch/087.png",
+        "external": [
+            "https://files.catbox.moe/rflgao.png",
+        ],
+    },
+    {
+        // Tamamura
+        "display": "images/nch/088.png",
+        "external": [
+            "https://files.catbox.moe/xwz7ma.png",
+        ],
+    },
+    {
+        // Taishou's Orders
+        "display": "images/nch/089.png",
+        "external": [
+            "https://files.catbox.moe/k71daa.png",
+        ],
+    },
+    {
+        // Bera-chan
+        "display": "images/nch/090.png",
+        "external": [
+            "https://files.catbox.moe/n798fy.png",
+        ],
+    },
+    {
+        // Yanba-kun's Disruption
+        "display": "images/nch/091.png",
+        "external": [
+            "https://files.catbox.moe/vlazkx.png",
+        ],
+    },
+    {
+        // Rokugou
+        "display": "images/nch/092.png",
+        "external": [
+            "https://files.catbox.moe/fnfx2i.png",
+        ],
+    },
+    {
+        // Daifuku-kun
+        "display": "images/nch/093.png",
+        "external": [
+            "https://files.catbox.moe/kbe5uh.png",
+        ],
+    },
+    {
+        // Shihandai's Encouragement
+        "display": "images/nch/094.png",
+        "external": [
+            "https://files.catbox.moe/kw4cec.png",
+        ],
+    },
+    {
+        // Oomama Midori
+        "display": "images/nch/095.png",
+        "external": [
+            "https://files.catbox.moe/dajx29.png",
+        ],
+    },
+    {
+        // Sasahara's Farm
+        "display": "images/nch/096.png",
+        "external": [
+            "https://files.catbox.moe/74lj1k.png",
+        ],
+    },
+    {
+        // Tokisadame Shoutengai
+        "display": "images/nch/097.png",
+        "external": [
+            "https://files.catbox.moe/ubtboj.png",
+        ],
+    },
+    {
+        // Tokisadame High School
+        "display": "images/nch/098.png",
+        "external": [
+            "https://files.catbox.moe/r3zn06.png",
+        ],
+    },
+    {
+        // Igo Soccer Club
+        "display": "images/nch/099.png",
+        "external": [
+            "https://files.catbox.moe/m5y9p0.png",
+        ],
+    },
+    {
+        // Embankment of Youth
+        "display": "images/nch/100.png",
+        "external": [
+            "https://files.catbox.moe/p766wb.png",
+        ],
+    },
+    {
+        // ;)
+        "display": "images/nch/101.png",
+        "external": [
+            "https://files.catbox.moe/6znjhp.png",
+        ],
+    },
+];
 
 let url_lookup = {};
 
